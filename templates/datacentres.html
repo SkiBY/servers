@@ -28,11 +28,11 @@
 {% for dc in datacentres  %}
     <tr style="text-align: right;" >
 
-        <td>{{dc.name}}</td>
+        <td><a href="/view_dc/{{dc.id}}">{{dc.name}}</a></td>
         <td>{{dc.address}}</td>
         <td><a href="/dc_servers_list/{{dc.id}}"></a>{{dc.slots}}</td>
         <td>{{dc.tier}}</td>
-        <td><a href="/remove_dc/{{dc.id}}">Удалить ДЦ</a></td>
+        <td><a href="#" onclick="if(confirm('Вы уверены, что хотите удалить датацентр?')){window.location='/remove_dc/{{dc.id}}'}" >Удалить ДЦ</a></td>
         
 {%endfor%}
 

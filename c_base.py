@@ -1,7 +1,7 @@
 # coding=utf-8 
 #приложение непосредственно
 
-from flask import Flask, redirect, url_for, request
+from flask import Flask, redirect, url_for, request, flash
 app = Flask(__name__)
 from flask import render_template, request
 
@@ -21,9 +21,9 @@ class Datacenter(db.Model):
         (3, '3'),
     ]
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), unique=True, nullable=False,)
-    address = db.Column(db.String(255)) 
+    id = db.Column(db.Integer, primary_key=True, )
+    name = db.Column(db.String(80), unique=True, nullable=False)
+    address = db.Column(db.Text(255)) 
     slots = db.Column(db.Integer, )
     #tier = db.Column(ChoiceType(tier_choice))
     tier = db.Column(db.Integer,)
@@ -41,7 +41,6 @@ class DataServer(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False,)
-    address = db.Column(db.String(255), nullable=False,) 
     manufacturer = db.Column(db.String(255), nullable=False,) 
     model = db.Column(db.String(255), nullable=False,) 
     s_number = db.Column(db.String(255), nullable=False,) 
@@ -101,11 +100,192 @@ class User(db.Model):
 
 
 
-@app.route('/add_dc')
+@app.route('/add_dc/', methods=['GET', 'POST'])
 def add_dc():
-    dc = Datacenter(name='DC0', address=u'Малая Бронная', slots=2, tier = u'2')
-    db.session.add(dc)
-    db.session.commit()
-    return redirect(url_for('datacentres'))
+    from wtforms import Form, TextField, IntegerField, DateField, BooleanField, StringField, PasswordField, validators
+    #from wtforms_alchemy import Unique
+    class DCForm(Form):
+
+        name = TextField(validators=[validators.Required(message=u'Обязательное поле')], label=u'Имя')
+        address = TextField(validators=[validators.Required(message=u'Обязательное поле')], label=u'Адрес')
+        slots = IntegerField(validators=[validators.Required(message=u'Обязательное поле'), validators.NumberRange(min=1)], label=u'Кол-во слотов')
+        tier = IntegerField(validators=[validators.Required(message=u'Обязательное поле'), validators.NumberRange(min=1,max=3, message=u'1, 2 или 3' )], label=u'Tier')
+
+        def validate_name(form, field):
+            if Datacenter.query.filter_by(name=field.data).first():
+                raise validators.ValidationError(u'Датацентр с таким именем уже существует')
+        
+
+    # from wtforms.ext.sqlalchemy.orm import model_form
+    # exclude = ['id', ]
+    # DCForm = model_form(Datacenter, Form, exclude=exclude, field_args = {
+    #     'slots' : {
+    #     'label':u'Слоты',
+    #     'validators' : [validators.NumberRange(min=1),],
+    #             },
+    #     'name' : {
+    #     'label':u'Имя центра',
+    #             },
+    #     'address' : {
+    #     'label':u'Адрес',
+    #             },
+    #     'tier' : {
+    #     'label':u'Tier',
+    #     'validators' : [validators.NumberRange(min=1, max=3, message='1, 2 или 3'),],
+    #             },
+
+    #     } )
+    
+    form = DCForm(request.form)
+
+    
+    if request.method == 'POST' and form.validate():
+        dc = Datacenter(
+            name=form.name.data,
+            address=form.address.data,
+            slots = form.slots.data,
+            tier=form.tier.data,
+            )
+        db.session.add(dc)
+        db.session.commit()
+
+        flash(u'Добавлен датацентр %s' % dc.name, 'success')
+        return redirect(url_for('datacentres'))
+    else:
+        if form.errors.items():
+            for field, errors in form.errors.iteritems():
+                for error in errors:
+                    flash(u"Ошибка в поле %s: %s" % (
+                        getattr(form, field).label.text,
+                        error
+                    ), 'error')
+
+        return render_template("add_dc.html",
+            form = form,
+            )
+
     
 
+
+    #проверка, есть ли такой ДЦ
+    dc = Datacenter.query.get_or_404(dc_id)
+    ds = DataServer(name='SRV8', manufacturer='Sun', model='1XNA', s_number='SN1267813', server_os='CentOS', datacenter_id=dc_id)
+    db.session.add(ds)
+    db.session.commit()
+    return redirect(url_for('view_dc', dc_id=dc_id))
+
+
+@app.route('/add_ds/<int:dc_id>/', methods=['GET', 'POST'])
+def add_ds(dc_id):
+    from wtforms import Form, TextField, IntegerField, DateField, BooleanField, StringField, PasswordField, validators
+    #from wtforms_alchemy import Unique
+    #для начала проверим, заняты ли слоты
+    dc = Datacenter.query.filter_by(id=dc_id).first_or_404()
+    c_slots = dc.slots
+    s_slots = DataServer.query.filter_by(datacenter_id = dc_id).count()
+    if c_slots == s_slots:
+        flash(u'В датацентре %s заняты все слоты' % dc.name, 'error')
+        return redirect(url_for('view_dc', dc_id=dc_id))
+
+    class DSForm(Form):
+        name = StringField(validators=[validators.Required(message=u'Обязательное поле')], label=u'Имя')
+        manufacturer = StringField(validators=[validators.Required(message=u'Обязательное поле')], label=u'Производитель')
+        model = StringField(validators=[validators.Required(message=u'Обязательное поле')], label=u'Модель')
+        s_number = StringField(validators=[validators.Required(message=u'Обязательное поле')], label=u'Серийный номер')
+        server_os = StringField(validators=[validators.Required(message=u'Обязательное поле')], label=u'Оп.система')
+        
+        
+                    
+
+    # from wtforms.ext.sqlalchemy.orm import model_form
+    # exclude = ['id', ]
+    # DCForm = model_form(Datacenter, Form, exclude=exclude, field_args = {
+    #     'slots' : {
+    #     'label':u'Слоты',
+    #     'validators' : [validators.NumberRange(min=1),],
+    #             },
+    #     'name' : {
+    #     'label':u'Имя центра',
+    #             },
+    #     'address' : {
+    #     'label':u'Адрес',
+    #             },
+    #     'tier' : {
+    #     'label':u'Tier',
+    #     'validators' : [validators.NumberRange(min=1, max=3, message='1, 2 или 3'),],
+    #             },
+
+    #     } )
+    
+    form = DSForm(request.form)
+
+    
+    if request.method == 'POST' and form.validate():
+        ds = DataServer(
+            name=form.name.data,
+            manufacturer=form.manufacturer.data,
+            model = form.model.data,
+            s_number=form.s_number.data,
+            server_os = form.server_os.data,
+            datacenter_id=dc_id,
+            )
+        db.session.add(ds)
+        db.session.commit()
+
+        flash(u'Добавлен сервер в датацентр %s' % dc.name, 'success')
+        return redirect(url_for('view_dc', dc_id=dc_id))
+    else:
+        if form.errors.items():
+            for field, errors in form.errors.iteritems():
+                for error in errors:
+                    flash(u"Ошибка в поле %s: %s" % (
+                        getattr(form, field).label.text,
+                        error
+                    ), 'error')
+
+        return render_template("add_ds.html",
+            form = form,
+            dc_id=dc_id,
+            )
+
+    
+
+    
+
+@app.route('/remove_dc/<int:dc_id>')
+def remove_dc(dc_id):
+    dc = Datacenter.query.get_or_404(dc_id)
+    db.session.delete(dc)
+    db.session.commit()
+    return redirect(url_for('datacentres'))
+
+@app.route('/view_dc/<int:dc_id>')
+def view_dc(dc_id):
+    dc = Datacenter.query.get_or_404(dc_id)
+    if request.method == 'GET' and 'sorting' in request.args:
+        sorting = request.args.get('sorting')
+    else:
+        sorting = 'id'
+       
+    
+    try:
+        d_servers = DataServer.query.filter_by(datacenter_id=dc.id).order_by(getattr(DataServer, sorting))
+        pass
+    except:
+        d_servers = DataServer.query.filter_by(datacenter_id=dc.id).order_by('id')    
+
+    
+    return render_template("datacenter_view.html",
+        datacenter = dc,
+        d_servers = d_servers,
+        #user = 'user',
+        )
+
+
+@app.route('/remove_ds/<int:ds_id>')
+def remove_ds(ds_id):
+    ds = DataServer.query.get_or_404(ds_id)
+    dc=ds.dataserver_id
+    db.session.delete(ds)
+    db.session.commit()
+    return redirect(url_for('view_dc', dc_id=dc))
