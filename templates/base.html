@@ -1,0 +1,16 @@
+<html>
+  <head>
+    {% if title %}
+    <title>{{title}} - Flask Servers</title>
+    {% else %}
+    <title>Flask Servers</title>
+    {% endif %}
+  </head>
+  <body>
+    <div>Система мониторинга серверов: <a href="/index">Домой</a></div>
+    <hr>
+    {% block content %}
+
+    {% endblock %}
+  </body>
+</html>

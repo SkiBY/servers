@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Список датацентров</h1>
+
+
+<table style="width:80%;" >
+<colgroup>
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+        
+    </colgroup>
+    <thead>
+        <tr class="cargo_head" style="text-align: right;">
+            <th style="text-align: right;"><a href="?sorting=name">Имя</a></th>
+            <th style="text-align: right;"><a href="?sorting=address">Адрес</a></th>
+            <th style="text-align: right;"><a href="?sorting=slots">Слотов</a></th>
+            <th style="text-align: right;"><a href="?sorting=tier">Tier</a></th>
+            <th style="text-align: right;"><span>Действия</span></th>
+                   
+        </tr>
+    </thead>
+<tbody>
+
+
+{% for dc in datacentres  %}
+    <tr style="text-align: right;" >
+
+        <td>{{dc.name}}</td>
+        <td>{{dc.address}}</td>
+        <td><a href="/dc_servers_list/{{dc.id}}"></a>{{dc.slots}}</td>
+        <td>{{dc.tier}}</td>
+        <td><a href="/remove_dc/{{dc.id}}">Удалить ДЦ</a></td>
+        
+{%endfor%}
+
+</tbody>
+
+<tfoot>
+
+</tfoot>
+
+</table>
+
+<a href="/add_dc">Добавить ДЦ</a>
+
+{% endblock %}

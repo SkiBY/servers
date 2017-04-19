@@ -1,0 +1,16 @@
+virtualenv
+sudo apt-get install postgresql postgresql-contrib libpq-dev
+pip install Flask, itsdangerous, Werkzeug, Jinja2, click, MarkupSafe, SQLAlchemy, SQLAlchemy-migrate, Flask-SQLAlchemy, Flask-Migrate, sqlalchemy-utils
+
+
+
+sudo -u postgres psql
+
+sudo adduser flask_user
+sudo -u postgres createuser flask_user
+
+sudo -u flask_user createdb servers
+
+export DATABASE_URL="postgresql://localhost/servers"
+
+"postgresql://postgres:postgres@localhost/servers" 
