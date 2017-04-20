@@ -1,6 +1,6 @@
 virtualenv
 sudo apt-get install postgresql postgresql-contrib libpq-dev psycopg2
-pip install Flask itsdangerous Werkzeug Jinja2 click MarkupSafe SQLAlchemy SQLAlchemy-migrate Flask-SQLAlchemy Flask-Migrate sqlalchemy-utils wtforms psycopg2
+pip install Flask itsdangerous Werkzeug Jinja2 click MarkupSafe SQLAlchemy SQLAlchemy-migrate Flask-SQLAlchemy Flask-Migrate sqlalchemy-utils wtforms psycopg2 flask-login bcrypt
 
 
 
