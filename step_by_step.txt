@@ -15,4 +15,5 @@ export DATABASE_URL="postgresql://localhost/servers"
 
 "postgresql://postgres:postgres@localhost/servers" 
 
-timechek
+timecheck
+timecheck2
