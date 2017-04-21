@@ -11,7 +11,7 @@
 1. Клонируйте проект:
 
 
-    git clone https://github.com/SkiBY/servers.git::
+    git clone https://github.com/SkiBY/servers.git
     cd servers
 
 
@@ -27,19 +27,19 @@
 
 Укажите реквизиты доступа в базу данных:
 
-
-    PG_USER = логин::
-    PG_PASS = пароль::
-    PG_BASE_NAME = имя созданной базы данных::
-
+```
+    PG_USER = логин
+    PG_PASS = пароль
+    PG_BASE_NAME = имя созданной базы данных
+```
 
 4. Запустите в папке p_code скрипты миграции баз данных и создания нового пользователя
-
-    python manage.py db init::
-    python manage.py db migrate::
-    python manage.py db upgrade::
-    python make_user.py::
-
+```
+    python manage.py db init
+    python manage.py db migrate
+    python manage.py db upgrade
+    python make_user.py
+```
 5. Добавьте скрипт для запуска uwsgi-проекта в автозагрузку
 
 
@@ -49,19 +49,19 @@
 *содержимое файла(замените часть в фигурных скобках на актуальные)*
 
 
-    description "uwsgi for p_code"::
+    description "uwsgi for p_code"
 
-    start on runlevel [2345]::
-    stop on runlevel [!2345]::
+    start on runlevel [2345]
+    stop on runlevel [!2345]
 
-    setuid {{your user}}::
-    setgid www-data::
+    setuid {{your user}}
+    setgid www-data
 
-    #if you use virtualenv::
-    env PATH={{path to projects folder}}/p_code/bin::
+    #if you use virtualenv
+    env PATH={{path to projects folder}}/p_code/bin
 
-    chdir {{path to projects folder}}/p_code::
-    exec uwsgi --ini p_code.ini::
+    chdir {{path to projects folder}}/p_code
+    exec uwsgi --ini p_code.ini
 
 
 *содержимое файла*
@@ -82,15 +82,15 @@
 
 *содержимое файла*
 
-    server {::
-        listen 80;::
-        server_name {{домен сервера или IP-адрес}};::
+    server {
+        listen 80;
+        server_name {{домен сервера или IP-адрес}};
 
-        location / {::
-            include uwsgi_params;::
-            uwsgi_pass unix:{{путь к проектам}}p_code/p_code.sock;::
-        }::
-    }::
+        location / {
+            include uwsgi_params;
+            uwsgi_pass unix:{{путь к проектам}}p_code/p_code.sock;
+        }
+    }
 
 
 *содержимое файла*
