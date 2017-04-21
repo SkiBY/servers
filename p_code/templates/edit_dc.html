@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Добавьте датацентр</h1>
+
+
+<form action="/edit_dc/{{dc_id}}/" method="post">
+{{ form.hidden_tag() }}
+            <table align="center" >
+                <tr>
+                    <td>{{form.name.label}}</td> <td>{{form.name}}</td>
+                </tr>
+                <tr>
+                    <td>{{form.address.label}}</td> <td>{{form.address}}</td>
+                </tr>
+                <tr>
+                    <td>{{form.slots.label}}</td> <td>{{form.slots}}</td>
+                </tr>
+                <tr>{% if form.tier.error %}AAA!{% endif %}
+                    <td>{{form.tier.label}}</td> <td>{{form.tier}}</td>
+                </tr>
+
+            </table>
+            
+            
+    <input type="submit" class="btn btn-default btn-xs" value="Изменить">
+    {{ form.csrf_token }}
+    
+    </form>   
+{#
+{% from 'macros.html' import render_form %}
+
+{{ render_form(form, action_url='/add_dc', action_text='Добавить') }}    
+#}
+
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Датацентр {{datacenter.name}}. Список серверов.</h1>
+
+
+<table style="align:center;width:80%;" align="center"  >
+<colgroup>
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+        
+    </colgroup>
+    <thead>
+        <tr class="cargo_head" style="text-align: right;">
+            <th style="text-align: right;"><a href="?sorting=id">Номер</a></th>
+            <th style="text-align: right;"><a href="?sorting=name">Имя</a></th>
+            <th style="text-align: right;">Производитель / Модель</th>
+            <th style="text-align: right;"></a>SN</th>
+            <th style="text-align: right;"><a href="?sorting=name">OS</a></th>
+            <th style="text-align: right;"></th>
+                   
+        </tr>
+    </thead>
+<tbody>
+
+
+{% for srv in d_servers  %}
+    <tr style="text-align: right;" >
+
+        <td>{{srv.id}}</td>
+        <td>{{srv.name}}</td>
+        <td>{{srv.manufacturer}}<br/>{{srv.model}}</td>
+        <td>{{srv.s_number}}</td>
+        <td>{{srv.server_os}}</td>
+        <td><a title="Изменить сервер" class="glyphicon glyphicon-pencil" href="/edit_ds/{{srv.id}}" ></a>
+        <a title="Удалить сервер" href="#" onclick="if(confirm('Вы уверены, что хотите удалить сервер?')){window.location='/remove_ds/{{srv.id}}'}" class="glyphicon glyphicon-remove-sign" ></a></td>
+        
+{%endfor%}
+
+</tbody>
+
+<tfoot>
+
+</tfoot>
+
+</table>
+
+<a href="/add_ds/{{datacenter.id}}">Добавить сервер</a>
+
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Добавьте сервер</h1>
+
+
+<form action="/add_ds/{{dc_id}}/" method="post">
+            <table align="center" >
+                <tr>
+                    <td>{{form.name.label}}</td> <td>{{form.name}}</td>
+                </tr>
+                <tr>
+                    <td>{{form.manufacturer.label}}</td> <td>{{form.manufacturer}}</td>
+                </tr>
+                <tr>
+                    <td>{{form.model.label}}</td> <td>{{form.model}}</td>
+                </tr>
+                <tr>
+                    <td>{{form.s_number.label}}</td> <td>{{form.s_number}}</td>
+                </tr>
+                <tr>
+                    <td>{{form.server_os.label}}</td> <td>{{form.server_os}}</td>
+                </tr>
+
+            </table>
+            
+            
+    <input type="submit" class="btn btn-primary btn-default" value="Добавить">
+    {{ form.csrf_token }}
+    
+    </form>   
+{#
+{% from 'macros.html' import render_form %}
+
+{{ render_form(form, action_url='/add_dc', action_text='Добавить') }}    
+#}
+
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Список датацентров</h1>
+
+
+<table style="width:80%;" align="center"  >
+<colgroup>
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+        
+    </colgroup>
+    <thead>
+        <tr class="cargo_head" style="text-align: right;">
+            <th style="text-align: right;"><a href="?sorting=name">Имя</a></th>
+            <th style="text-align: right;"><a href="?sorting=address">Адрес</a></th>
+            <th style="text-align: right;"><a href="?sorting=b_slots">Серверов</a></th>
+            <th style="text-align: right;"><a href="?sorting=tier">Tier</a></th>
+            <th style="text-align: right;"><span></span></th>
+                   
+        </tr>
+    </thead>
+<tbody>
+
+
+{% for dc in datacentres  %}
+    <tr style="text-align: right;" >
+
+        <td><a href="/view_dc/{{dc.id}}">{{dc.name}}</a></td>
+        <td>{{dc.address}}</td>
+        <td><a href="/dc_servers_list/{{dc.id}}"></a>{{dc.b_slots}} / {{dc.slots}} </td>
+        <td>{{dc.tier}}</td>
+        <td><a href="/edit_dc/{{dc.id}}" title="Изменить датацентр" class="glyphicon glyphicon-pencil"></a>
+        <a title="Удалить датацентра" href="#" onclick="if(confirm('Вы уверены, что хотите удалить датацентра?')){window.location='/remove_dc/{{dc.id}}'}" class="glyphicon glyphicon-remove-sign" ></a></td></td>
+
+                
+{%endfor%}
+
+</tbody>
+
+<tfoot>
+
+</tfoot>
+
+</table>
+<p align="center">
+<a class="btn btn-primary btn-default" href="/add_dc">Добавить ДЦ</a>
+</p>
+{% endblock %}
