@@ -10,10 +10,10 @@
 
 1. Клонируйте проект:
 
-
-    git clone https://github.com/SkiBY/servers.git
-    cd servers
-
+```
+git clone https://github.com/SkiBY/servers.git
+cd servers
+```
 
 2. В virtualenv(что крайне рекомендовано) или на чистой системе проверьте набор python пакетов и установите недостающие:
 
@@ -28,17 +28,17 @@
 Укажите реквизиты доступа в базу данных:
 
 
-        PG_USER = логин
-        PG_PASS = пароль
-        PG_BASE_NAME = имя созданной базы данных
+    PG_USER = логин
+    PG_PASS = пароль
+    PG_BASE_NAME = имя созданной базы данных
 
 
 4. Запустите в папке p_code скрипты миграции баз данных и создания нового пользователя
 
-        python manage.py db init
-        python manage.py db migrate
-        python manage.py db upgrade
-        python make_user.py
+    python manage.py db init
+    python manage.py db migrate
+    python manage.py db upgrade
+    python make_user.py
 
 5. Добавьте скрипт для запуска uwsgi-проекта в автозагрузку
 
