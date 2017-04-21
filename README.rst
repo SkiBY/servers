@@ -10,16 +10,16 @@
 
 1. Клонируйте проект:
 
-``
-git clone https://github.com/SkiBY/servers.git
-cd servers
-``
+
+    git clone https://github.com/SkiBY/servers.git
+    cd servers
+
 
 2. В virtualenv(что крайне рекомендовано) или на чистой системе проверьте набор python пакетов и установите недостающие:
 
-``
-pip install -r requirements.txt
-``
+
+    pip install -r requirements.txt
+
 
 3. Создайте базу данных для проекта, дайте к ней доступ нужному пользователю.
 
@@ -27,82 +27,80 @@ pip install -r requirements.txt
 
 Укажите реквизиты доступа в базу данных:
 
-``
-PG_USER = логин
-PG_PASS = пароль
-PG_BASE_NAME = имя созданной базы данных
-``
+
+    PG_USER = логин
+    PG_PASS = пароль
+    PG_BASE_NAME = имя созданной базы данных
+
 
 5. Запустите в папке p_code скрипты миграции баз данных и создания нового пользователя
 
-``
-python manage.py db init
-python manage.py db migrate
-python manage.py db upgrade
-python make_user.py
-``
+    python manage.py db init
+    python manage.py db migrate
+    python manage.py db upgrade
+    python make_user.py
 
 4. Добавьте скрипт для запуска uwsgi-проекта в автозагрузку
 
-``
-sudo nano /etc/init/p_code.conf
-``
 
-----содержимое файла(замените часть в фигурных скобках на актуальные)----
+    sudo nano /etc/init/p_code.conf
 
-``
-description "uwsgi for p_code"
 
-start on runlevel [2345]
-stop on runlevel [!2345]
+*содержимое файла(замените часть в фигурных скобках на актуальные)*
 
-setuid {{your user}}
-setgid www-data
 
-#if you use virtualenv
-env PATH={{path to projects folder}}/p_code/bin
+    description "uwsgi for p_code"
 
-chdir {{path to projects folder}}/p_code
-exec uwsgi --ini p_code.ini
-``
+    start on runlevel [2345]
+    stop on runlevel [!2345]
 
-----/содержимое файла----
+    setuid {{your user}}
+    setgid www-data
+
+    #if you use virtualenv
+    env PATH={{path to projects folder}}/p_code/bin
+
+    chdir {{path to projects folder}}/p_code
+    exec uwsgi --ini p_code.ini
+
+
+*содержимое файла*
 
 Стартуйте проект:
 
-``
-sudo start p_code
-``
+
+    sudo start p_code
+
 
 5. Настройте nginx
 
 Создайте конфигурационный файл для проекта:
 
-``
-sudo nano /etc/nginx/sites-available/p_code
-``
 
------содержимое файла------
+    sudo nano /etc/nginx/sites-available/p_code
 
-``
-server {
-    listen 80;
-    server_name {{домен сервера или IP-адрес}};
 
-    location / {
-        include uwsgi_params;
-        uwsgi_pass unix:{{путь к проектам}}p_code/p_code.sock;
+*содержимое файла*
+
+
+    server {
+        listen 80;
+        server_name {{домен сервера или IP-адрес}};
+
+        location / {
+            include uwsgi_params;
+            uwsgi_pass unix:{{путь к проектам}}p_code/p_code.sock;
+        }
     }
-}
-``
 
------/содержимое файла------
+
+*содержимое файла*
 
 Создайте ссылку в папку разрешенных
 
-``
-sudo ln -s /etc/nginx/sites-available/p_code /etc/nginx/sites-enabled
-``
+
+    sudo ln -s /etc/nginx/sites-available/p_code /etc/nginx/sites-enabled
+
 
 Перезапустите nginx
 
